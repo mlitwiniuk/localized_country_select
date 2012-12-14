@@ -16,5 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = LocalizedCountrySelect::VERSION
   gem.add_dependency "actionpack", ">= 3.0"
   gem.add_dependency "hpricot"
+  gem.add_dependency "geocoder"
   gem.add_development_dependency "rspec", ">= 2.0.0"
 end
