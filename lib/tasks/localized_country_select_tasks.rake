@@ -30,9 +30,9 @@ namespace :import do
     # TODO : Implement locale import chooser from CLDR root via Highline
     
     # Setup variables
-    locale = ARGV[1]
+    locale = ENV['LOCALE']
     unless locale
-      puts "\n[!] Usage: rake import:country_select de\n\n"
+      puts "\n[!] Usage: rake import:country_select LOCALE=de\n\n"
       exit 0
     end
 
@@ -81,8 +81,10 @@ TAIL
     
     # ----- Write the parsed values into file      ---------------------------------
     puts "\n... writing the output"
-    filename = Rails.root.join('config', 'locales', "#{locale}.rb")
-    filename += '.NEW' if File.exists?(filename) # Append 'NEW' if file exists
+    filename = Rails.root.join('config', 'locales', "country_select_#{locale.downcase}.rb")
+    if filename.exist?
+      filename = Pathname.new("#{filename.to_s}.NEW")
+    end
     File.open(filename, 'w+') { |f| f << output }
     puts "\n---\nWritten values for the '#{locale}' into file: #{filename}\n"
     # ------------------------------------------------------------------------------

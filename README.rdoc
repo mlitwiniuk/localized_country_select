@@ -11,7 +11,7 @@ You can easily translate country codes in your application like this:
 
     <%= I18n.t @user.country, :scope => 'countries' %>
 
-Comes with a Rake task <tt>rake import:country_select 'de'</tt> for importing country names
+Comes with a Rake task <tt>rake import:country_select LOCALE=de</tt> for importing country names
 from Unicode.org's CLDR repository (http://www.unicode.org/cldr/data/charts/summary/root.html)
 Don't forget to restart the application when you add new locale.
 
