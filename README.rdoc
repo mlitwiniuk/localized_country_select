@@ -35,7 +35,7 @@ In environment.rb add
 
 Show full country names:
 
-    <%= localized_country_select(:user, :country, [], {:include_blank => 'Please choose...')} %>
+    <%= localized_country_select(:user, :country, [], {:include_blank => 'Please choose...'}) %>
 
 will become:
 
