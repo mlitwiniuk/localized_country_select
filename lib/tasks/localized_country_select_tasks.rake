@@ -9,12 +9,18 @@ require 'open-uri'
 # 
 # Don't forget to restart the application when you add new locale to load it into Rails!
 # 
-# == Example
-#   rake import:country_select 'de'
+# == Parameters
+#   LOCALE (required): Sets the locale to use. Output file name will include this.
+#   FORMAT (optional): Output format, either 'rb' or 'yml'. Defaults to 'rb' if not specified.
+#   WEB_LOCALE (optional): Forces a locale code to use when querying the Unicode.org CLDR archive.
+#
+# == Examples
+#   rake import:country_select LOCALE=de
+#   rake import:country_select LOCALE=pt-BR WEB_LOCALE=pt FORMAT=yml
 # 
 # The code is deliberately procedural and simple, so it's easily
 # understandable by beginners as an introduction to Rake tasks power.
-# See http://github.com/joshmh/cldr/tree/master/converter.rb for much more robust solution
+# See https://github.com/svenfuchs/ruby-cldr for much more robust solution
 
 namespace :import do
 
@@ -36,12 +42,18 @@ namespace :import do
       exit 0
     end
 
+    # convert locale code to Unicode.org CLDR acceptable code
+    web_locale = if ENV['WEB_LOCALE'] then ENV['WEB_LOCALE']
+                 elsif %w(zht zhtw).include?(locale.downcase.gsub(/[-_]/,'')) then 'zh_Hant'
+                 elsif %w(zhs zhcn).include?(locale.downcase.gsub(/[-_]/,'')) then 'zh_Hans'
+                 else locale.underscore.split('_')[0] end
+
     # ----- Get the CLDR HTML     --------------------------------------------------
     begin
-      puts "... getting the HTML file for locale '#{locale}'"
-      doc = Hpricot( open("http://www.unicode.org/cldr/data/charts/summary/#{locale}.html") )
+      puts "... getting the HTML file for locale '#{web_locale}'"
+      doc = Hpricot( open("http://www.unicode.org/cldr/data/charts/summary/#{web_locale}.html") )
     rescue => e
-      puts "[!] Invalid locale name '#{locale}'! Not found in CLDR (#{e})"
+      puts "[!] Invalid locale name '#{web_locale}'! Not found in CLDR (#{e})"
       exit 0
     end
 
@@ -63,6 +75,25 @@ namespace :import do
 
 
     # ----- Prepare the output format     ------------------------------------------
+
+    format = if ENV['FORMAT'].nil?||%(rb ruby).include?(ENV['FORMAT'].downcase) then :rb
+             elsif %(yml yaml).include?(ENV['FORMAT'].downcase) then :yml end
+
+    unless format
+      puts "\n[!] FORMAT must be either 'rb' or 'yml'\n\n"
+      exit 0
+    end
+
+    if format==:yml
+      output =<<HEAD
+#{locale}:
+  countries:
+HEAD
+      countries.each do |country|
+        output << "    #{country[:code]}: \"#{country[:name]}\"\n"
+      end
+
+    else # rb format
     output = "#encoding: UTF-8\n"
     output <<<<HEAD
 { :#{locale} => {
@@ -78,11 +109,11 @@ HEAD
   }
 }
 TAIL
+    end
 
-    
     # ----- Write the parsed values into file      ---------------------------------
     puts "\n... writing the output"
-    filename = Rails.root.join('config', 'locales', "country_select_#{locale.downcase}.rb")
+    filename = Rails.root.join('config', 'locales', "countries.#{locale}.#{format}")
     if filename.exist?
       filename = Pathname.new("#{filename.to_s}.NEW")
     end
