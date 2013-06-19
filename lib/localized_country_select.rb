@@ -29,7 +29,7 @@ module LocalizedCountrySelect
           sort_by { |country| country.first.parameterize }
       else
         I18n.translate(:countries).map { |key, value| [value, key.to_s.upcase] }.
-          sort_by { |country| country.first.parameterize }
+          sort_by { |country| country.first }
       end
     end
     # Return array with codes and localized country names for array of country codes passed as argument
