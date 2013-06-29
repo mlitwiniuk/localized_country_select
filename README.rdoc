@@ -50,7 +50,7 @@ will become:
 
 Show only country codes:
 
-   <%= localized_country_select(:user, :country, [], {:include_blank => 'Please choose...', :description => :abbreviated})
+   <%= localized_country_select(:user, :country, [], {:include_blank => 'Please choose...', :description => :abbreviated}) %>
 
 will become:
 
@@ -64,6 +64,11 @@ will become:
 
 
 for the <tt>en</tt> locale.
+
+
+You can exclude countries by code using the exclude option (a single code or an array of country codes):
+
+   localized_country_select(:user, :country, [], {:exclude => [:ZZ, :US]})
 
 
 == Formtastic and SimpleForm

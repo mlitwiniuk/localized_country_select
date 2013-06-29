@@ -68,6 +68,18 @@ class LocalizedCountrySelectTest < Test::Unit::TestCase
     assert_equal 'Španělsko', I18n.t('ES', :scope => 'countries')
   end
 
+  def test_excludes_countries
+    assert_nothing_raised { LocalizedCountrySelect::localized_countries_array(:exclude => :ZZ) }
+    
+    assert_block do
+      not LocalizedCountrySelect::localized_countries_array(:exclude => :ZZ).any? {|country| country.last == "ZZ"}
+    end
+
+    assert_block do
+      not LocalizedCountrySelect::localized_countries_array(:exclude => [:ZZ, :US]).any? {|country| country.last == "ZZ" or country.last == "US"}
+    end
+  end
+
   def test_localized_countries_array_returns_correctly
     assert_nothing_raised { LocalizedCountrySelect::localized_countries_array() }
     # puts LocalizedCountrySelect::localized_countries_array.inspect

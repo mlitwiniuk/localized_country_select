@@ -24,13 +24,13 @@ module LocalizedCountrySelect
     # Returns array with codes and localized country names (according to <tt>I18n.locale</tt>)
     # for <tt><option></tt> tags
     def localized_countries_array(options={})
+      exclude = Array(options[:exclude]).map {|code| code.to_s.upcase }
+
       if(options[:description]==:abbreviated)
-        I18n.translate(:countries).map { |key, value| [key.to_s.upcase] }.
-          sort_by { |country| country.first.parameterize }
+        I18n.translate(:countries).map { |key, value| [key.to_s.upcase] if !exclude.include?(key.to_s.upcase) }
       else
-        I18n.translate(:countries).map { |key, value| [value, key.to_s.upcase] }.
-          sort_by { |country| country.first.parameterize }
-      end
+        I18n.translate(:countries).map { |key, value| [value, key.to_s.upcase] if !exclude.include?(key.to_s.upcase) }
+      end.compact.sort_by { |country| country.first.parameterize }
     end
     # Return array with codes and localized country names for array of country codes passed as argument
     # == Example
