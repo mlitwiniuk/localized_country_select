@@ -80,10 +80,8 @@ module ActionView
         if priority_countries
           country_options += options_for_select(LocalizedCountrySelect::priority_countries_array(priority_countries, options), selected)
           country_options += "<option value=\"\" disabled=\"disabled\">-------------</option>\n".html_safe
-          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array(options) - LocalizedCountrySelect::priority_countries_array(priority_countries, options), selected)
-        else
-          return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array(options), selected)
         end
+        return country_options + options_for_select(LocalizedCountrySelect::localized_countries_array(options), selected)
       end
       alias_method :country_options_for_select, :localized_country_options_for_select
 
